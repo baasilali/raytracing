@@ -140,9 +140,3 @@ npm run dev
 3. Interact with objects using the colored handles
 4. Move the light source to see different ray patterns
 5. Toggle between technical and realistic modes
-
-## Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-This project is licensed under the MIT License - see the LICENSE file for details. 
