@@ -14,7 +14,7 @@ An interactive 3D raytracing visualization built with React Three Fiber that dem
 > - Technical visualization mode showing individual light rays
 > - Intuitive controls for camera movement and object manipulation
 
-[View the live demo](https://github.com/baasilali/raytracing)
+[View the live demo]([https://github.com/baasilali/raytracing](https://raytracing-fawn.vercel.app/))
 
 ## Features
 
