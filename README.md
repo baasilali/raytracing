@@ -4,11 +4,17 @@ An interactive 3D raytracing visualization built with React Three Fiber that dem
 
 ## Demo
 
-[Add your demo gif/video here]
+![Raytracing Demo](./public/raytracing-demo.png)
 
-```markdown
-![Demo](path_to_your_demo.gif)
-```
+> This interactive visualization demonstrates:
+> - Real-time ray casting with configurable ray count and length
+> - Dynamic reflection and refraction visualization
+> - Interactive object manipulation with colored handles
+> - Light source positioning with real-time ray pattern updates
+> - Technical visualization mode showing individual light rays
+> - Intuitive controls for camera movement and object manipulation
+
+[View the live demo](https://github.com/baasilali/raytracing)
 
 ## Features
 
