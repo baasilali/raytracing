@@ -1,15 +1,7 @@
 {
-  "name": "my-v0-project",
+  "name": "raytracing",
   "version": "0.1.0",
   "private": true,
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "commonjs",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -71,9 +63,9 @@
     "expo-file-system": "latest",
     "expo-gl": "latest",
     "react-native": "latest",
-    "three": "^0.162.0",
-    "@react-three/fiber": "^8.15.19",
-    "@react-three/drei": "^9.102.6"
+    "three": "latest",
+    "@react-three/fiber": "latest",
+    "@react-three/drei": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

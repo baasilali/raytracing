@@ -20,175 +20,6 @@ import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-// GitHub Icon Component
-const GitHubIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    width="24"
-    height="24"
-    stroke="currentColor"
-    fill="none"
-    className="opacity-75 hover:opacity-100 transition-opacity"
-  >
-    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-  </svg>
-)
-
-// Type definitions
-interface Ray {
-  start: THREE.Vector3
-  end: THREE.Vector3
-  color: THREE.Color
-}
-
-interface SceneProps {
-  rayCount: number
-  rayLength: number
-  showReflections: boolean
-  showRefractions: boolean
-  paused: boolean
-  objectControlsEnabled: boolean
-  lightControlsEnabled: boolean
-  realisticMode: boolean
-}
-
-interface LightbulbProps {
-  position?: THREE.Vector3
-}
-
-interface RayProps {
-  start: THREE.Vector3
-  end: THREE.Vector3
-  color: THREE.Color
-}
-
-// Controls component
-function Controls({
-  rayCount,
-  setRayCount,
-  rayLength,
-  setRayLength,
-  showReflections,
-  setShowReflections,
-  showRefractions,
-  setShowRefractions,
-  paused,
-  setPaused,
-  objectControlsEnabled,
-  setObjectControlsEnabled,
-  lightControlsEnabled,
-  setLightControlsEnabled,
-  realisticMode,
-  setRealisticMode,
-}: {
-  rayCount: number
-  setRayCount: (value: number) => void
-  rayLength: number
-  setRayLength: (value: number) => void
-  showReflections: boolean
-  setShowReflections: (value: boolean) => void
-  showRefractions: boolean
-  setShowRefractions: (value: boolean) => void
-  paused: boolean
-  setPaused: (value: boolean) => void
-  objectControlsEnabled: boolean
-  setObjectControlsEnabled: (value: boolean) => void
-  lightControlsEnabled: boolean
-  setLightControlsEnabled: (value: boolean) => void
-  realisticMode: boolean
-  setRealisticMode: (value: boolean) => void
-}) {
-  return (
-    <Card className="absolute top-4 left-4 p-4 bg-black/70 text-white w-72 space-y-4">
-      <h2 className="text-lg font-bold">Raytracing Controls</h2>
-
-      <Tabs defaultValue="rays">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="rays">Ray Settings</TabsTrigger>
-          <TabsTrigger value="controls">Controls</TabsTrigger>
-          <TabsTrigger value="display">Display</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="rays" className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <Label htmlFor="ray-count">Ray Count: {rayCount}</Label>
-            </div>
-            <Slider
-              id="ray-count"
-              min={5}
-              max={50}
-              step={1}
-              value={[rayCount]}
-              onValueChange={(value) => setRayCount(value[0])}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <Label htmlFor="ray-length">Ray Length: {rayLength}</Label>
-            </div>
-            <Slider
-              id="ray-length"
-              min={5}
-              max={20}
-              step={1}
-              value={[rayLength]}
-              onValueChange={(value) => setRayLength(value[0])}
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Switch id="reflections" checked={showReflections} onCheckedChange={setShowReflections} />
-            <Label htmlFor="reflections">Show Reflections</Label>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Switch id="refractions" checked={showRefractions} onCheckedChange={setShowRefractions} />
-            <Label htmlFor="refractions">Show Refractions</Label>
-          </div>
-
-          <Button variant={paused ? "default" : "secondary"} onClick={() => setPaused(!paused)}>
-            {paused ? "Resume" : "Pause"} Simulation
-          </Button>
-        </TabsContent>
-
-        <TabsContent value="controls" className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="object-controls-enabled"
-              checked={objectControlsEnabled}
-              onCheckedChange={setObjectControlsEnabled}
-            />
-            <Label htmlFor="object-controls-enabled">Enable Object Controls</Label>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="light-controls-enabled"
-              checked={lightControlsEnabled}
-              onCheckedChange={setLightControlsEnabled}
-            />
-            <Label htmlFor="light-controls-enabled">Enable Light Source Controls</Label>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="display" className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Switch id="realistic-mode" checked={realisticMode} onCheckedChange={setRealisticMode} />
-            <Label htmlFor="realistic-mode">Realistic Mode</Label>
-          </div>
-          <p className="text-xs text-gray-400">
-            {realisticMode
-              ? "Showing realistic lighting and shadows. Move objects to see how light interacts with them."
-              : "Showing ray visualization. Toggle to see realistic lighting effects."}
-          </p>
-        </TabsContent>
-      </Tabs>
-    </Card>
-  )
-}
-
 export default function RaytracingEnvironment() {
   const [rayCount, setRayCount] = useState(20)
   const [rayLength, setRayLength] = useState(10)
@@ -201,37 +32,6 @@ export default function RaytracingEnvironment() {
 
   return (
     <div className="w-full h-screen relative">
-      {/* Attribution */}
-      <a
-        href="https://github.com/baasilali"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-black/70 text-white px-4 py-2 rounded-md hover:bg-black/80 transition-colors"
-      >
-        <span>Made by Baasil Ali</span>
-        <GitHubIcon />
-      </a>
-
-      {/* Controls */}
-      <Controls
-        rayCount={rayCount}
-        setRayCount={setRayCount}
-        rayLength={rayLength}
-        setRayLength={setRayLength}
-        showReflections={showReflections}
-        setShowReflections={setShowReflections}
-        showRefractions={showRefractions}
-        setShowRefractions={setShowRefractions}
-        paused={paused}
-        setPaused={setPaused}
-        objectControlsEnabled={objectControlsEnabled}
-        setObjectControlsEnabled={setObjectControlsEnabled}
-        lightControlsEnabled={lightControlsEnabled}
-        setLightControlsEnabled={setLightControlsEnabled}
-        realisticMode={realisticMode}
-        setRealisticMode={setRealisticMode}
-      />
-
       <Canvas shadows camera={{ position: [0, 5, 10], fov: 50 }}>
         <color attach="background" args={[realisticMode ? "#000510" : "#111"]} />
         {realisticMode ? <fog attach="fog" args={["#000510", 10, 50]} /> : <fog attach="fog" args={["#111", 10, 30]} />}
@@ -247,6 +47,14 @@ export default function RaytracingEnvironment() {
           </>
         )}
 
+        {/* Directional light for general scene illumination */}
+        <directionalLight
+          position={[5, 5, 5]}
+          intensity={realisticMode ? 0.2 : 0.7}
+          castShadow={realisticMode}
+          shadow-mapSize={[1024, 1024]}
+        />
+
         <Scene
           rayCount={rayCount}
           rayLength={rayLength}
@@ -259,8 +67,96 @@ export default function RaytracingEnvironment() {
         />
 
         <OrbitControls makeDefault />
-        <Stats className="top-right" />
+        <Stats position="top-right" />
       </Canvas>
+
+      <Card className="absolute top-4 left-4 p-4 bg-black/70 text-white w-72 space-y-4">
+        <h2 className="text-lg font-bold">Raytracing Controls</h2>
+
+        <Tabs defaultValue="rays">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="rays">Ray Settings</TabsTrigger>
+            <TabsTrigger value="controls">Controls</TabsTrigger>
+            <TabsTrigger value="display">Display</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="rays" className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label htmlFor="ray-count">Ray Count: {rayCount}</Label>
+              </div>
+              <Slider
+                id="ray-count"
+                min={5}
+                max={50}
+                step={1}
+                value={[rayCount]}
+                onValueChange={(value) => setRayCount(value[0])}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <Label htmlFor="ray-length">Ray Length: {rayLength}</Label>
+              </div>
+              <Slider
+                id="ray-length"
+                min={5}
+                max={20}
+                step={1}
+                value={[rayLength]}
+                onValueChange={(value) => setRayLength(value[0])}
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch id="reflections" checked={showReflections} onCheckedChange={setShowReflections} />
+              <Label htmlFor="reflections">Show Reflections</Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch id="refractions" checked={showRefractions} onCheckedChange={setShowRefractions} />
+              <Label htmlFor="refractions">Show Refractions</Label>
+            </div>
+
+            <Button variant={paused ? "default" : "secondary"} onClick={() => setPaused(!paused)}>
+              {paused ? "Resume" : "Pause"} Simulation
+            </Button>
+          </TabsContent>
+
+          <TabsContent value="controls" className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="object-controls-enabled"
+                checked={objectControlsEnabled}
+                onCheckedChange={setObjectControlsEnabled}
+              />
+              <Label htmlFor="object-controls-enabled">Enable Object Controls</Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="light-controls-enabled"
+                checked={lightControlsEnabled}
+                onCheckedChange={setLightControlsEnabled}
+              />
+              <Label htmlFor="light-controls-enabled">Enable Light Source Controls</Label>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="display" className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch id="realistic-mode" checked={realisticMode} onCheckedChange={setRealisticMode} />
+              <Label htmlFor="realistic-mode">Realistic Mode</Label>
+            </div>
+            <p className="text-xs text-gray-400">
+              {realisticMode
+                ? "Showing realistic lighting and shadows. Move objects to see how light interacts with them."
+                : "Showing ray visualization. Toggle to see realistic lighting effects."}
+            </p>
+          </TabsContent>
+        </Tabs>
+      </Card>
 
       <div className="absolute bottom-4 left-4 p-4 bg-black/70 text-white rounded-md">
         <p>🔄 Grab the colored handles to move objects and light</p>
@@ -273,7 +169,7 @@ export default function RaytracingEnvironment() {
 }
 
 // Lightbulb model for realistic mode
-function Lightbulb({ position = new THREE.Vector3() }: LightbulbProps) {
+function Lightbulb({ position }) {
   return (
     <group position={position}>
       {/* Bulb glass */}
@@ -314,25 +210,22 @@ function Scene({
   objectControlsEnabled,
   lightControlsEnabled,
   realisticMode,
-}: SceneProps) {
-  const raySource = useRef<THREE.SpotLight>(null)
-  const sphere = useRef<THREE.Mesh>(null)
-  const cube = useRef<THREE.Mesh>(null)
-  const floor = useRef<THREE.Mesh>(null)
-  const glass = useRef<THREE.Mesh>(null)
-  const lightGroup = useRef<THREE.Group>(null)
-  const pointLight = useRef<THREE.PointLight>(null)
+}) {
+  const raySource = useRef()
+  const sphere = useRef()
+  const cube = useRef()
+  const floor = useRef()
+  const glass = useRef()
+  const lightGroup = useRef()
+  const pointLight = useRef()
 
   // Create a light helper for visualization (only in non-realistic mode)
-  useHelper(
-    !realisticMode && raySource.current ? (raySource as unknown as React.RefObject<THREE.Object3D>) : null,
-    THREE.SpotLightHelper
-  )
+  useHelper(!realisticMode && raySource.current ? raySource : null, THREE.SpotLightHelper, "white")
 
   // Rays state
-  const [rays, setRays] = useState<Ray[]>([])
-  const [reflectedRays, setReflectedRays] = useState<Ray[]>([])
-  const [refractedRays, setRefractedRays] = useState<Ray[]>([])
+  const [rays, setRays] = useState([])
+  const [reflectedRays, setReflectedRays] = useState([])
+  const [refractedRays, setRefractedRays] = useState([])
 
   // Raycaster for intersection detection
   const raycaster = useMemo(() => new THREE.Raycaster(), [])
@@ -341,13 +234,12 @@ function Scene({
   useFrame(() => {
     if (paused || realisticMode) return
 
-    const newRays: Ray[] = []
-    const newReflectedRays: Ray[] = []
-    const newRefractedRays: Ray[] = []
+    const newRays = []
+    const newReflectedRays = []
+    const newRefractedRays = []
 
     // Origin of rays
     const origin = new THREE.Vector3()
-    if (raySource.current) {
     raySource.current.getWorldPosition(origin)
 
     // Cast rays in different directions
@@ -360,11 +252,8 @@ function Scene({
       // Set up raycaster
       raycaster.set(origin, direction)
 
-        // Find intersections with objects that exist
-        const objects = [sphere.current, cube.current, floor.current, glass.current].filter(
-          (obj): obj is THREE.Mesh => obj !== null
-        )
-        const intersects = raycaster.intersectObjects(objects)
+      // Find intersections
+      const intersects = raycaster.intersectObjects([sphere.current, cube.current, floor.current, glass.current])
 
       // Store ray data
       const rayEnd = origin.clone().add(direction.clone().multiplyScalar(rayLength))
@@ -381,12 +270,10 @@ function Scene({
         })
 
         // Calculate reflected ray if enabled
-          if (showReflections && intersection.face) {
+        if (showReflections) {
           const normal = intersection.face.normal.clone()
-            // Transform normal to world space if object exists
-            if (intersection.object) {
+          // Transform normal to world space
           normal.transformDirection(intersection.object.matrixWorld)
-            }
 
           // Calculate reflection direction
           const reflectionDirection = direction.clone().reflect(normal).normalize()
@@ -415,11 +302,9 @@ function Scene({
         }
 
         // Calculate refracted ray if enabled and hitting glass
-          if (showRefractions && intersection.object === glass.current && intersection.face) {
+        if (showRefractions && intersection.object === glass.current) {
           const normal = intersection.face.normal.clone()
-            if (intersection.object) {
           normal.transformDirection(intersection.object.matrixWorld)
-            }
 
           // Simple approximation of refraction
           const refractionDirection = direction.clone().add(normal.clone().multiplyScalar(-0.5)).normalize()
@@ -439,7 +324,6 @@ function Scene({
           end: rayEnd,
           color: new THREE.Color(0xffffff),
         })
-        }
       }
     }
 
@@ -680,24 +564,21 @@ function Scene({
 }
 
 // Ray visualization component
-function Ray({ start, end, color }: RayProps) {
-  const ref = useRef<THREE.Line>(null)
+function Ray({ start, end, color }) {
+  const ref = useRef()
 
   useEffect(() => {
-    if (ref.current && ref.current.geometry) {
-      const geometry = new THREE.BufferGeometry()
+    if (ref.current) {
       const points = [start, end]
-      geometry.setFromPoints(points)
-      ref.current.geometry = geometry
-      if ('computeLineDistances' in ref.current) {
+      ref.current.geometry.setFromPoints(points)
       ref.current.computeLineDistances()
-      }
     }
   }, [start, end])
 
   return (
-    <group>
-      <primitive object={new THREE.Line(new THREE.BufferGeometry().setFromPoints([start, end]), new THREE.LineBasicMaterial({ color }))} />
-    </group>
+    <line ref={ref}>
+      <bufferGeometry />
+      <lineBasicMaterial color={color} linewidth={1} />
+    </line>
   )
 }
