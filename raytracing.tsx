@@ -20,6 +20,20 @@ import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+// GitHub Icon Component
+const GitHubIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    stroke="currentColor"
+    fill="none"
+    className="opacity-75 hover:opacity-100 transition-opacity"
+  >
+    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+  </svg>
+)
+
 // Type definitions
 interface Ray {
   start: THREE.Vector3
@@ -60,6 +74,17 @@ export default function RaytracingEnvironment() {
 
   return (
     <div className="w-full h-screen relative">
+      {/* Attribution */}
+      <a
+        href="https://github.com/baasilali"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-black/70 text-white px-4 py-2 rounded-md hover:bg-black/80 transition-colors"
+      >
+        <span>Made by Baasil Ali</span>
+        <GitHubIcon />
+      </a>
+
       <Canvas shadows camera={{ position: [0, 5, 10], fov: 50 }}>
         <color attach="background" args={[realisticMode ? "#000510" : "#111"]} />
         {realisticMode ? <fog attach="fog" args={["#000510", 10, 50]} /> : <fog attach="fog" args={["#111", 10, 30]} />}
@@ -272,17 +297,17 @@ function Scene({
     // Origin of rays
     const origin = new THREE.Vector3()
     if (raySource.current) {
-      raySource.current.getWorldPosition(origin)
+    raySource.current.getWorldPosition(origin)
 
-      // Cast rays in different directions
-      for (let i = 0; i < rayCount; i++) {
-        // Calculate ray direction (in a cone shape)
-        const angle = (i / rayCount) * Math.PI * 2
-        const spread = 0.3
-        const direction = new THREE.Vector3(Math.sin(angle) * spread, -1, Math.cos(angle) * spread).normalize()
+    // Cast rays in different directions
+    for (let i = 0; i < rayCount; i++) {
+      // Calculate ray direction (in a cone shape)
+      const angle = (i / rayCount) * Math.PI * 2
+      const spread = 0.3
+      const direction = new THREE.Vector3(Math.sin(angle) * spread, -1, Math.cos(angle) * spread).normalize()
 
-        // Set up raycaster
-        raycaster.set(origin, direction)
+      // Set up raycaster
+      raycaster.set(origin, direction)
 
         // Find intersections with objects that exist
         const objects = [sphere.current, cube.current, floor.current, glass.current].filter(
@@ -290,79 +315,79 @@ function Scene({
         )
         const intersects = raycaster.intersectObjects(objects)
 
-        // Store ray data
-        const rayEnd = origin.clone().add(direction.clone().multiplyScalar(rayLength))
+      // Store ray data
+      const rayEnd = origin.clone().add(direction.clone().multiplyScalar(rayLength))
 
-        if (intersects.length > 0) {
-          const intersection = intersects[0]
-          const hitPoint = intersection.point
+      if (intersects.length > 0) {
+        const intersection = intersects[0]
+        const hitPoint = intersection.point
 
-          // Primary ray from source to hit point
-          newRays.push({
-            start: origin.clone(),
-            end: hitPoint.clone(),
-            color: new THREE.Color(0xffffff),
-          })
+        // Primary ray from source to hit point
+        newRays.push({
+          start: origin.clone(),
+          end: hitPoint.clone(),
+          color: new THREE.Color(0xffffff),
+        })
 
-          // Calculate reflected ray if enabled
+        // Calculate reflected ray if enabled
           if (showReflections && intersection.face) {
-            const normal = intersection.face.normal.clone()
+          const normal = intersection.face.normal.clone()
             // Transform normal to world space if object exists
             if (intersection.object) {
-              normal.transformDirection(intersection.object.matrixWorld)
+          normal.transformDirection(intersection.object.matrixWorld)
             }
 
-            // Calculate reflection direction
-            const reflectionDirection = direction.clone().reflect(normal).normalize()
+          // Calculate reflection direction
+          const reflectionDirection = direction.clone().reflect(normal).normalize()
 
-            // Determine reflection strength based on material
-            let reflectionStrength = 0
-            if (intersection.object === sphere.current) {
-              reflectionStrength = 0.9 // Highly reflective
-            } else if (intersection.object === cube.current) {
-              reflectionStrength = 0.3 // Less reflective
-            } else if (intersection.object === floor.current) {
-              reflectionStrength = 0.1 // Barely reflective
-            }
-
-            if (reflectionStrength > 0) {
-              const reflectedEnd = hitPoint
-                .clone()
-                .add(reflectionDirection.clone().multiplyScalar(rayLength * reflectionStrength))
-
-              newReflectedRays.push({
-                start: hitPoint.clone(),
-                end: reflectedEnd,
-                color: new THREE.Color(0x00ffff),
-              })
-            }
+          // Determine reflection strength based on material
+          let reflectionStrength = 0
+          if (intersection.object === sphere.current) {
+            reflectionStrength = 0.9 // Highly reflective
+          } else if (intersection.object === cube.current) {
+            reflectionStrength = 0.3 // Less reflective
+          } else if (intersection.object === floor.current) {
+            reflectionStrength = 0.1 // Barely reflective
           }
 
-          // Calculate refracted ray if enabled and hitting glass
-          if (showRefractions && intersection.object === glass.current && intersection.face) {
-            const normal = intersection.face.normal.clone()
-            if (intersection.object) {
-              normal.transformDirection(intersection.object.matrixWorld)
-            }
+          if (reflectionStrength > 0) {
+            const reflectedEnd = hitPoint
+              .clone()
+              .add(reflectionDirection.clone().multiplyScalar(rayLength * reflectionStrength))
 
-            // Simple approximation of refraction
-            const refractionDirection = direction.clone().add(normal.clone().multiplyScalar(-0.5)).normalize()
-
-            const refractedEnd = hitPoint.clone().add(refractionDirection.clone().multiplyScalar(rayLength * 0.7))
-
-            newRefractedRays.push({
+            newReflectedRays.push({
               start: hitPoint.clone(),
-              end: refractedEnd,
-              color: new THREE.Color(0xff00ff),
+              end: reflectedEnd,
+              color: new THREE.Color(0x00ffff),
             })
           }
-        } else {
-          // No intersection, draw full ray
-          newRays.push({
-            start: origin.clone(),
-            end: rayEnd,
-            color: new THREE.Color(0xffffff),
+        }
+
+        // Calculate refracted ray if enabled and hitting glass
+          if (showRefractions && intersection.object === glass.current && intersection.face) {
+          const normal = intersection.face.normal.clone()
+            if (intersection.object) {
+          normal.transformDirection(intersection.object.matrixWorld)
+            }
+
+          // Simple approximation of refraction
+          const refractionDirection = direction.clone().add(normal.clone().multiplyScalar(-0.5)).normalize()
+
+          const refractedEnd = hitPoint.clone().add(refractionDirection.clone().multiplyScalar(rayLength * 0.7))
+
+          newRefractedRays.push({
+            start: hitPoint.clone(),
+            end: refractedEnd,
+            color: new THREE.Color(0xff00ff),
           })
+        }
+      } else {
+        // No intersection, draw full ray
+        newRays.push({
+          start: origin.clone(),
+          end: rayEnd,
+          color: new THREE.Color(0xffffff),
+        })
         }
       }
     }
@@ -614,7 +639,7 @@ function Ray({ start, end, color }: RayProps) {
       geometry.setFromPoints(points)
       ref.current.geometry = geometry
       if ('computeLineDistances' in ref.current) {
-        ref.current.computeLineDistances()
+      ref.current.computeLineDistances()
       }
     }
   }, [start, end])
