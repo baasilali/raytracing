@@ -62,6 +62,133 @@ interface RayProps {
   color: THREE.Color
 }
 
+// Controls component
+function Controls({
+  rayCount,
+  setRayCount,
+  rayLength,
+  setRayLength,
+  showReflections,
+  setShowReflections,
+  showRefractions,
+  setShowRefractions,
+  paused,
+  setPaused,
+  objectControlsEnabled,
+  setObjectControlsEnabled,
+  lightControlsEnabled,
+  setLightControlsEnabled,
+  realisticMode,
+  setRealisticMode,
+}: {
+  rayCount: number
+  setRayCount: (value: number) => void
+  rayLength: number
+  setRayLength: (value: number) => void
+  showReflections: boolean
+  setShowReflections: (value: boolean) => void
+  showRefractions: boolean
+  setShowRefractions: (value: boolean) => void
+  paused: boolean
+  setPaused: (value: boolean) => void
+  objectControlsEnabled: boolean
+  setObjectControlsEnabled: (value: boolean) => void
+  lightControlsEnabled: boolean
+  setLightControlsEnabled: (value: boolean) => void
+  realisticMode: boolean
+  setRealisticMode: (value: boolean) => void
+}) {
+  return (
+    <Card className="absolute top-4 left-4 p-4 bg-black/70 text-white w-72 space-y-4">
+      <h2 className="text-lg font-bold">Raytracing Controls</h2>
+
+      <Tabs defaultValue="rays">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="rays">Ray Settings</TabsTrigger>
+          <TabsTrigger value="controls">Controls</TabsTrigger>
+          <TabsTrigger value="display">Display</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="rays" className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <Label htmlFor="ray-count">Ray Count: {rayCount}</Label>
+            </div>
+            <Slider
+              id="ray-count"
+              min={5}
+              max={50}
+              step={1}
+              value={[rayCount]}
+              onValueChange={(value) => setRayCount(value[0])}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <Label htmlFor="ray-length">Ray Length: {rayLength}</Label>
+            </div>
+            <Slider
+              id="ray-length"
+              min={5}
+              max={20}
+              step={1}
+              value={[rayLength]}
+              onValueChange={(value) => setRayLength(value[0])}
+            />
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch id="reflections" checked={showReflections} onCheckedChange={setShowReflections} />
+            <Label htmlFor="reflections">Show Reflections</Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch id="refractions" checked={showRefractions} onCheckedChange={setShowRefractions} />
+            <Label htmlFor="refractions">Show Refractions</Label>
+          </div>
+
+          <Button variant={paused ? "default" : "secondary"} onClick={() => setPaused(!paused)}>
+            {paused ? "Resume" : "Pause"} Simulation
+          </Button>
+        </TabsContent>
+
+        <TabsContent value="controls" className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="object-controls-enabled"
+              checked={objectControlsEnabled}
+              onCheckedChange={setObjectControlsEnabled}
+            />
+            <Label htmlFor="object-controls-enabled">Enable Object Controls</Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="light-controls-enabled"
+              checked={lightControlsEnabled}
+              onCheckedChange={setLightControlsEnabled}
+            />
+            <Label htmlFor="light-controls-enabled">Enable Light Source Controls</Label>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="display" className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Switch id="realistic-mode" checked={realisticMode} onCheckedChange={setRealisticMode} />
+            <Label htmlFor="realistic-mode">Realistic Mode</Label>
+          </div>
+          <p className="text-xs text-gray-400">
+            {realisticMode
+              ? "Showing realistic lighting and shadows. Move objects to see how light interacts with them."
+              : "Showing ray visualization. Toggle to see realistic lighting effects."}
+          </p>
+        </TabsContent>
+      </Tabs>
+    </Card>
+  )
+}
+
 export default function RaytracingEnvironment() {
   const [rayCount, setRayCount] = useState(20)
   const [rayLength, setRayLength] = useState(10)
@@ -85,6 +212,26 @@ export default function RaytracingEnvironment() {
         <GitHubIcon />
       </a>
 
+      {/* Controls */}
+      <Controls
+        rayCount={rayCount}
+        setRayCount={setRayCount}
+        rayLength={rayLength}
+        setRayLength={setRayLength}
+        showReflections={showReflections}
+        setShowReflections={setShowReflections}
+        showRefractions={showRefractions}
+        setShowRefractions={setShowRefractions}
+        paused={paused}
+        setPaused={setPaused}
+        objectControlsEnabled={objectControlsEnabled}
+        setObjectControlsEnabled={setObjectControlsEnabled}
+        lightControlsEnabled={lightControlsEnabled}
+        setLightControlsEnabled={setLightControlsEnabled}
+        realisticMode={realisticMode}
+        setRealisticMode={setRealisticMode}
+      />
+
       <Canvas shadows camera={{ position: [0, 5, 10], fov: 50 }}>
         <color attach="background" args={[realisticMode ? "#000510" : "#111"]} />
         {realisticMode ? <fog attach="fog" args={["#000510", 10, 50]} /> : <fog attach="fog" args={["#111", 10, 30]} />}
@@ -100,14 +247,6 @@ export default function RaytracingEnvironment() {
           </>
         )}
 
-        {/* Directional light for general scene illumination */}
-        <directionalLight
-          position={[5, 5, 5]}
-          intensity={realisticMode ? 0.2 : 0.7}
-          castShadow={realisticMode}
-          shadow-mapSize={[1024, 1024]}
-        />
-
         <Scene
           rayCount={rayCount}
           rayLength={rayLength}
@@ -122,94 +261,6 @@ export default function RaytracingEnvironment() {
         <OrbitControls makeDefault />
         <Stats className="top-right" />
       </Canvas>
-
-      <Card className="absolute top-4 left-4 p-4 bg-black/70 text-white w-72 space-y-4">
-        <h2 className="text-lg font-bold">Raytracing Controls</h2>
-
-        <Tabs defaultValue="rays">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="rays">Ray Settings</TabsTrigger>
-            <TabsTrigger value="controls">Controls</TabsTrigger>
-            <TabsTrigger value="display">Display</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="rays" className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <Label htmlFor="ray-count">Ray Count: {rayCount}</Label>
-              </div>
-              <Slider
-                id="ray-count"
-                min={5}
-                max={50}
-                step={1}
-                value={[rayCount]}
-                onValueChange={(value) => setRayCount(value[0])}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <Label htmlFor="ray-length">Ray Length: {rayLength}</Label>
-              </div>
-              <Slider
-                id="ray-length"
-                min={5}
-                max={20}
-                step={1}
-                value={[rayLength]}
-                onValueChange={(value) => setRayLength(value[0])}
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch id="reflections" checked={showReflections} onCheckedChange={setShowReflections} />
-              <Label htmlFor="reflections">Show Reflections</Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch id="refractions" checked={showRefractions} onCheckedChange={setShowRefractions} />
-              <Label htmlFor="refractions">Show Refractions</Label>
-            </div>
-
-            <Button variant={paused ? "default" : "secondary"} onClick={() => setPaused(!paused)}>
-              {paused ? "Resume" : "Pause"} Simulation
-            </Button>
-          </TabsContent>
-
-          <TabsContent value="controls" className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="object-controls-enabled"
-                checked={objectControlsEnabled}
-                onCheckedChange={setObjectControlsEnabled}
-              />
-              <Label htmlFor="object-controls-enabled">Enable Object Controls</Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="light-controls-enabled"
-                checked={lightControlsEnabled}
-                onCheckedChange={setLightControlsEnabled}
-              />
-              <Label htmlFor="light-controls-enabled">Enable Light Source Controls</Label>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="display" className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Switch id="realistic-mode" checked={realisticMode} onCheckedChange={setRealisticMode} />
-              <Label htmlFor="realistic-mode">Realistic Mode</Label>
-            </div>
-            <p className="text-xs text-gray-400">
-              {realisticMode
-                ? "Showing realistic lighting and shadows. Move objects to see how light interacts with them."
-                : "Showing ray visualization. Toggle to see realistic lighting effects."}
-            </p>
-          </TabsContent>
-        </Tabs>
-      </Card>
 
       <div className="absolute bottom-4 left-4 p-4 bg-black/70 text-white rounded-md">
         <p>🔄 Grab the colored handles to move objects and light</p>
